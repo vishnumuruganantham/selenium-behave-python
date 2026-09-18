@@ -3,7 +3,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+)
+from selenium.webdriver.support.ui import Select
 
 
 def create_driver():
@@ -55,3 +60,31 @@ fluent_wait_for_element_and_click = (
     .until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Add Element']")))
     .click()
 )
+
+driver.find_element(By.XPATH, "//button[text()='Delete']").click()
+driver.get(base_url)
+driver.find_element(By.XPATH, "//a[text()='Dropdown']").click()
+
+# Select
+dropdown = Select(driver.find_element(By.ID, "dropdown"))
+dropdown.select_by_value("1")
+dropdown.select_by_index(2)
+dropdown.select_by_visible_text("Option 1")
+
+print(f"Total options = {len(dropdown.options)}")
+print(f"Selected option = {dropdown.first_selected_option.text}")
+all_option_texts = [option.text for option in dropdown.options]
+print(f"All texts of available options = {all_option_texts}")
+
+try:
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, "summa"))
+    )
+except (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+) as error:
+    print(
+        f"Just passing time after catching {error.__class__.__name__} exception"
+    )  # It catches timeout exception
