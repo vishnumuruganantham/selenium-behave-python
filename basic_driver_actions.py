@@ -10,6 +10,7 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
+    NoSuchFrameException,
 )
 
 
@@ -147,3 +148,26 @@ driver.get(f"{base_url}/drag_and_drop")
 element_a = driver.find_element(By.ID, "column-a")
 element_b = driver.find_element(By.ID, "column-b")
 actions.click_and_hold(element_a).move_to_element(element_b).release().perform()
+
+driver.get(f"{base_url}/nested_frames")
+# Frames
+
+# Switch to frame with name "frame-top"
+driver.switch_to.frame("frame-top")
+
+# Navigates next inside another frame which has name "frame-left"
+driver.switch_to.frame("frame-left")
+
+driver.switch_to.parent_frame()  # Switches one frame up
+driver.switch_to.default_content()  # Switches to page level
+
+# Using webdriver wait to switch to frame
+WebDriverWait(driver, 20).until(
+    EC.frame_to_be_available_and_switch_to_it("frame-bottom")
+)
+try:
+    driver.switch_to.frame("frame-left")
+except NoSuchFrameException:
+    print(
+        "Threw 'NoSuchFrameExceptionexception' as we are not in default content to switch to this frame"
+    )
