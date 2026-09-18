@@ -12,6 +12,7 @@ from selenium.common.exceptions import (
     TimeoutException,
     NoSuchFrameException,
 )
+import time
 
 
 def create_driver():
@@ -171,3 +172,26 @@ except NoSuchFrameException:
     print(
         "Threw 'NoSuchFrameExceptionexception' as we are not in default content to switch to this frame"
     )
+
+driver.get(f"{base_url}/windows")
+# Window Handles
+
+main_handle = driver.current_window_handle
+
+link = driver.find_element(By.LINK_TEXT, "Click Here")
+link.click()
+
+print(f"Number of windows open = {len(driver.window_handles)}")
+
+for handle in driver.window_handles:
+    if handle != main_handle:
+        driver.switch_to.window(handle)
+        driver.close()
+
+driver.switch_to.window(main_handle)
+driver.switch_to.new_window("tab")
+driver.close()  # Closes last opened tab alone
+driver.switch_to.window(main_handle)
+driver.switch_to.new_window("window")
+driver.close()  # Closes last opened single tab window. driver.quit() will close all windows and tabs
+time.sleep(10)
