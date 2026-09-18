@@ -18,8 +18,8 @@ def create_driver():
     options.add_argument("--disable-gpu")
     # options.add_argument("--headless=new")
 
-    driver = webdriver.Chrome(options=options)
-    return driver
+    d = webdriver.Chrome(options=options)
+    return d
 
 
 driver = create_driver()
@@ -35,7 +35,6 @@ driver.get(base_url)
 
 driver.back()
 driver.forward()
-
 
 # Waits
 
@@ -88,3 +87,29 @@ except (
     print(
         f"Just passing time after catching {error.__class__.__name__} exception"
     )  # It catches timeout exception
+
+driver.get(f"{base_url}/javascript_alerts")
+driver.find_element(By.XPATH, "//button[text()='Click for JS Alert']").click()
+alert = driver.switch_to.alert
+message_alert_1 = alert.text
+print(f"First alert's message: {message_alert_1}")
+alert.accept()
+
+driver.find_element(By.XPATH, "//button[text()='Click for JS Confirm']").click()
+alert = driver.switch_to.alert
+message_alert_2 = alert.text
+print(f"Second alert's message: {message_alert_2}")
+alert.dismiss()
+
+driver.find_element(By.XPATH, "//button[text()='Click for JS Prompt']").click()
+alert = driver.switch_to.alert
+message_alert_3 = alert.text
+print(f"Third alert's message: {message_alert_3}")
+text_to_send = "Hi Vanakams"
+alert.send_keys(text_to_send)
+alert.accept()
+result = driver.find_element(By.XPATH, "//p[@id='result']").text
+print(result)
+
+if text_to_send in result:
+    print("Nee sadhichuta da dai!")
