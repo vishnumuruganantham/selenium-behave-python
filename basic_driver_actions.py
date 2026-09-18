@@ -1,14 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
 )
-from selenium.webdriver.support.ui import Select
 
 
 def create_driver():
@@ -23,7 +25,7 @@ def create_driver():
 
 
 driver = create_driver()
-base_url = "https://the-internet.herokuapp.com/"
+base_url = "https://the-internet.herokuapp.com"
 driver.get(base_url)
 
 
@@ -113,3 +115,35 @@ print(result)
 
 if text_to_send in result:
     print("Nee sadhichuta da dai!")
+
+driver.get(f"{base_url}/hovers")
+
+# Actions
+actions = ActionChains(driver)
+
+element_1 = driver.find_element(
+    By.XPATH, "//h5[text()='name: user1']/ancestor::div[@class='figure']"
+)
+
+# Hover : Only the element which is hovered's text is shown
+actions.move_to_element(element_1).perform()
+print(
+    f"Checking whether element 3 is seen: {driver.find_element(By.XPATH, "//h5[text()='name: user3']").is_displayed()}"
+)
+print(
+    f"Checking whether element 1 is seen: {driver.find_element(By.XPATH, "//h5[text()='name: user1']").is_displayed()}"
+)
+
+# Context click
+driver.get(f"{base_url}/context_menu")
+actions.context_click(driver.find_element(By.ID, "hot-spot")).perform()
+driver.switch_to.alert.accept()
+actions.key_down(Keys.ALT).send_keys(Keys.ARROW_LEFT).key_up(Keys.ALT).perform()
+actions.send_keys(Keys.ESCAPE).perform()
+# Tried to get rid of context dropdown, no luck.
+
+# Drag and drop
+driver.get(f"{base_url}/drag_and_drop")
+element_a = driver.find_element(By.ID, "column-a")
+element_b = driver.find_element(By.ID, "column-b")
+actions.click_and_hold(element_a).move_to_element(element_b).release().perform()
