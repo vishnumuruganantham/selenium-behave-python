@@ -19,7 +19,10 @@ class LoginPage(BasePage):
         return self
 
     def login(self, user, password):
-        self.type(self.user_name, user)
+        if user is None:
+            self.type(self.user_name, "")
+        else:
+            self.type(self.user_name, user)
         self.type(self.pass_word, password)
         self.click(self.submit_btn)
         return InventoryPage(self.driver)  # fluent: returns the NEXT page
