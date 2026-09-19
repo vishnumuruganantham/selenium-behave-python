@@ -1,5 +1,6 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
+from pages.inventory_page import InventoryPage
 
 
 class LoginPage(BasePage):
@@ -21,6 +22,7 @@ class LoginPage(BasePage):
         self.type(self.user_name, user)
         self.type(self.pass_word, password)
         self.click(self.submit_btn)
+        return InventoryPage(self.driver)  # fluent: returns the NEXT page
 
     def error_message(self):
         return self.text(self.error)
