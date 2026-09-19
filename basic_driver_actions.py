@@ -30,7 +30,6 @@ driver = create_driver()
 base_url = "https://the-internet.herokuapp.com"
 driver.get(base_url)
 
-
 # Meddling with URL, going to new url and coming back and forward
 print(driver.current_url)
 driver.refresh()
@@ -77,10 +76,10 @@ dropdown.select_by_visible_text("Option 1")
 print(f"Total options = {len(dropdown.options)}")
 print(f"Selected option = {dropdown.first_selected_option.text}")
 all_option_texts = [option.text for option in dropdown.options]
-print(f"All texts of available options = {all_option_texts}")
+print(f"All texts = {all_option_texts}")
 
 try:
-    WebDriverWait(driver, 5).until(
+    WebDriverWait(driver, 2).until(
         EC.visibility_of_element_located((By.XPATH, "summa"))
     )
 except (
@@ -89,10 +88,13 @@ except (
     TimeoutException,
 ) as error:
     print(
-        f"Just passing time after catching {error.__class__.__name__} exception"
+        f"Safely caught expected exception:  {error.__class__.__name__}"
     )  # It catches timeout exception
 
 driver.get(f"{base_url}/javascript_alerts")
+
+# Alerts
+
 driver.find_element(By.XPATH, "//button[text()='Click for JS Alert']").click()
 alert = driver.switch_to.alert
 message_alert_1 = alert.text
@@ -116,7 +118,7 @@ result = driver.find_element(By.XPATH, "//p[@id='result']").text
 print(result)
 
 if text_to_send in result:
-    print("Nee sadhichuta da dai!")
+    print("Nee sadhichuta da dai! (Text verification passed)")
 
 driver.get(f"{base_url}/hovers")
 
@@ -130,10 +132,10 @@ element_1 = driver.find_element(
 # Hover : Only the element which is hovered's text is shown
 actions.move_to_element(element_1).perform()
 print(
-    f"Checking whether element 3 is seen: {driver.find_element(By.XPATH, "//h5[text()='name: user3']").is_displayed()}"
+    f"Is user 3 seen: {driver.find_element(By.XPATH, "//h5[text()='name: user3']").is_displayed()}"
 )
 print(
-    f"Checking whether element 1 is seen: {driver.find_element(By.XPATH, "//h5[text()='name: user1']").is_displayed()}"
+    f"Is user 1 seen?: {driver.find_element(By.XPATH, "//h5[text()='name: user1']").is_displayed()}"
 )
 
 # Context click
@@ -149,6 +151,8 @@ driver.get(f"{base_url}/drag_and_drop")
 element_a = driver.find_element(By.ID, "column-a")
 element_b = driver.find_element(By.ID, "column-b")
 actions.click_and_hold(element_a).move_to_element(element_b).release().perform()
+# or
+actions.drag_and_drop(element_a, element_b).perform()
 
 driver.get(f"{base_url}/nested_frames")
 # Frames
@@ -194,4 +198,5 @@ driver.close()  # Closes last opened tab alone
 driver.switch_to.window(main_handle)
 driver.switch_to.new_window("window")
 driver.close()  # Closes last opened single tab window. driver.quit() will close all windows and tabs
-time.sleep(10)
+driver.switch_to.window(main_handle)
+time.sleep(5)
