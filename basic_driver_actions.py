@@ -13,6 +13,8 @@ from selenium.common.exceptions import (
     NoSuchFrameException,
 )
 import time
+from utils.data_reader import DataReader
+import json
 
 
 def create_driver():
@@ -199,4 +201,27 @@ driver.switch_to.window(main_handle)
 driver.switch_to.new_window("window")
 driver.close()  # Closes last opened single tab window. driver.quit() will close all windows and tabs
 driver.switch_to.window(main_handle)
+
+# Test Data: Reading through data_reader
+
+# Fetching particular user
+valid_user = DataReader.get_user("valid_user")
+for key, value in valid_user.items():
+    print(key, value)
+
+all_users = DataReader.get()
+
+# Loop through and print the users
+print("--- Printing User Profiles ---")
+for profile_name, details in all_users.items():
+    print(f"\nProfile: {profile_name}")
+    print(f"  Username: {details.get('username')}")
+    print(f"  Password: {details.get('password')}")
+
+    # Check if it has a dashboard or an error message expected
+    if "expected_dashboard" in details:
+        print(f"  Expected: {details['expected_dashboard']}")
+    elif "expected_error" in details:
+        print(f"  Expected: {details['expected_error']}")
+
 time.sleep(5)

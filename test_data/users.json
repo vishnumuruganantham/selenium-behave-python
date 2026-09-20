@@ -1,0 +1,17 @@
+{
+    "valid_user": {
+        "username": "vishnu",
+        "password": "secret",
+        "expected_dashboard": "Welcome, Vishnu"
+    },
+    "invalid_user": {
+        "username": "vishnu",
+        "password": "wrongpass",
+        "expected_error": "Invalid credentials"
+    },
+    "locked_user": {
+        "username": "locked_account",
+        "password": "secret",
+        "expected_error": "Account is locked"
+    }
+}
