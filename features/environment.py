@@ -1,11 +1,16 @@
 from utils.driver_factory import DriverFactory
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
+from utils.config_reader import ConfigReader
+
+
+def before_all(context):
+    context.config_data = ConfigReader()
 
 
 def before_scenario(context, scenario):
-
-    context.driver = DriverFactory.get_driver()
+    browser = context.config_data.get("app", "browser")
+    context.driver = DriverFactory.get_driver(browser)
     context.login_page = LoginPage(context.driver)
     context.inventory = InventoryPage(context.driver)
 
