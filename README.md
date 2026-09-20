@@ -116,12 +116,12 @@ behave.ini        Behave runner configuration
 - **`allure` command not found** — the Allure CLI isn't installed (it's
   separate from pip); see "Viewing reports."
 
-## Learning Progress
+## Core Selenium
 
-Using the [sample test website](https://the-internet.herokuapp.com/) to
+Core Selenium interactions demonstrated against the [sample test website](https://the-internet.herokuapp.com/) to
 practice basic Selenium actions with the driver.
 
-**Completed:**
+**Implemented:**
 1. Driver creation
 2. Navigating to a URL — refresh, forward, and back
 3. Waits: Implicit, Explicit, Fluent
