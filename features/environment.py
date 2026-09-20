@@ -4,6 +4,7 @@ from pages.inventory_page import InventoryPage
 from utils.config_reader import ConfigReader
 from datetime import datetime
 import os
+import allure
 
 
 def before_all(context):
@@ -19,11 +20,24 @@ def before_scenario(context, scenario):
 
 def after_step(context, step):
     if step.status == "failed":
+        # This attaches perfectly to Allure regardless of characters
+        allure.attach(
+            context.driver.get_screenshot_as_png(),
+            name=step.name,
+            attachment_type=allure.attachment_type.PNG,
+        )
+
+        # Local backup path
         folder = "screenshots"
         if not os.path.exists(folder):
             os.makedirs(folder)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        context.driver.save_screenshot(f"screenshots/{timestamp}_{step.name}.png")
+
+        # Strip spaces and illegal characters out for the local filename
+        safe_step_name = "".join(
+            c for c in step.name if c.isalnum() or c in (" ", "_")
+        ).replace(" ", "_")
+        context.driver.save_screenshot(f"screenshots/{timestamp}_{safe_step_name}.png")
 
 
 def after_scenario(context, scenario):
