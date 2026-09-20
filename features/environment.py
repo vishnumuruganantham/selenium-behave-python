@@ -1,15 +1,11 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from utils.driver_factory import DriverFactory
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 
 
 def before_scenario(context, scenario):
-    options = Options()
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-gpu")
 
-    context.driver = webdriver.Chrome(options=options)
+    context.driver = DriverFactory.get_driver()
     context.login_page = LoginPage(context.driver)
     context.inventory = InventoryPage(context.driver)
 
