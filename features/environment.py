@@ -12,7 +12,7 @@ def before_all(context):
 
 
 def before_scenario(context, scenario):
-    browser = context.config_data.get("app", "browser")
+    browser = context.config.userdata.get("browser", "chrome")
     context.driver = DriverFactory.get_driver(browser)
     context.login_page = LoginPage(context.driver)
     context.inventory = InventoryPage(context.driver)
