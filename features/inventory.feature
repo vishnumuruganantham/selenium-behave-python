@@ -1,0 +1,8 @@
+@smoke
+Feature: Inventory page
+
+	Scenario: Whether product is able to be added to cart
+		Given the login page is open
+		When the user logs in as "standard_user" with password "secret_sauce"
+		Then the inventory page is displayed
+		Then the user should be able to add products to cart
