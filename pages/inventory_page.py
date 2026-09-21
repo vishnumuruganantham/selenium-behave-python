@@ -1,5 +1,6 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
+import logging
 
 
 class InventoryPage(BasePage):
@@ -17,6 +18,8 @@ class InventoryPage(BasePage):
         for button in all_add_to_cart_buttons:
             self.click(button)
         cart_count = int(self.text(self.total_item_count))
+        logging.info(f"{len(all_add_to_cart_buttons)} add to cart buttons clicked")
+        logging.info(f"{cart_count} number of items added to cart")
         return len(all_add_to_cart_buttons) == cart_count
 
     def calculate_sum_of_all_prices(self):
