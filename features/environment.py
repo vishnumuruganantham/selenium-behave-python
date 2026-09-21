@@ -31,7 +31,7 @@ def before_scenario(context, scenario):
     browser = context.config.userdata.get("browser", "chrome")
     context.driver = DriverFactory.get_driver(browser)
     context.login_page = LoginPage(context.driver)
-    context.inventory = InventoryPage(context.driver)
+    context.inventory_page = InventoryPage(context.driver)
     logging.info(f"Starting scenario: {scenario.name}")
 
 
