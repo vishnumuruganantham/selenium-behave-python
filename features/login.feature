@@ -19,6 +19,6 @@ Feature: User login
 
 		Examples:
 			| user            | pwd             | message               |
-			| empty           | secret_sauce    | Username is required  |
+			| | secret_sauce | Username is required |
 			| problem_user    | secret_ketchup  | Username and password do not match any user in this service  |
 			| locked_out_user | secret_sauce    | Sorry, this user has been locked out.  |

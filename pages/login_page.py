@@ -1,6 +1,5 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
-from pages.inventory_page import InventoryPage
 from utils.config_reader import ConfigReader
 
 
@@ -21,13 +20,10 @@ class LoginPage(BasePage):
         return self
 
     def login(self, user, password):
-        if user is None:
-            self.type(self.user_name, "")
-        else:
-            self.type(self.user_name, user)
+        self.type(self.user_name, user)
         self.type(self.pass_word, password)
         self.click(self.submit_btn)
-        return InventoryPage(self.driver)  # fluent: returns the NEXT page
+        return self
 
     def error_message(self):
         return self.text(self.error)
