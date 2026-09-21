@@ -32,6 +32,9 @@ class BasePage(ABC):
         except TimeoutException:
             return False
 
+    def multiple_elements(self, locator):
+        return self.wait.until(EC.visibility_of_all_elements_located(locator))
+
     @abstractmethod
     def is_loaded(self):
         """Each page must define its own loading verification logic."""
