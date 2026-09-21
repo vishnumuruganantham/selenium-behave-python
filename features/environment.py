@@ -10,10 +10,14 @@ import logging
 
 def before_all(context):
     context.config_data = ConfigReader()
+
+    # Make sure the reports folder exists before the FileHandler tries to write into it
+    os.makedirs("reports", exist_ok=True)
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.FileHandler("results/test_run.log"), logging.StreamHandler()],
+        handlers=[logging.FileHandler("reports/test_run.log"), logging.StreamHandler()],
     )
     logging.info("Test run started")
 
