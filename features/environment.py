@@ -17,7 +17,12 @@ def before_all(context):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.FileHandler("reports/test_run.log"), logging.StreamHandler()],
+        handlers=[
+            logging.FileHandler(
+                "reports/test_run.log", encoding="utf-8"
+            ),  # ← add encoding
+            logging.StreamHandler(),
+        ],
     )
     logging.info("Test run started")
 
