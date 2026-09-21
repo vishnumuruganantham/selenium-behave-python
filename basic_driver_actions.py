@@ -14,7 +14,9 @@ from selenium.common.exceptions import (
 )
 import time
 from utils.data_reader import DataReader
-import json
+
+import os
+from dotenv import load_dotenv
 
 
 def create_driver():
@@ -223,5 +225,15 @@ for profile_name, details in all_users.items():
         print(f"  Expected: {details['expected_dashboard']}")
     elif "expected_error" in details:
         print(f"  Expected: {details['expected_error']}")
+
+# Reading from .env file
+load_dotenv()  # reads .env and loads its keys into environment variables
+
+username = os.getenv("TEST_USERNAME")
+password = os.getenv("TEST_PASSWORD")
+bank_account = os.getenv("TEST_BANK_ACCOUNT_NUMBER")
+api_key = os.getenv("API_KEY")
+
+print(f"\nReading from .env file kept locally: {bank_account}")  
 
 time.sleep(5)

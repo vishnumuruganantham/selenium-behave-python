@@ -3,3 +3,4 @@ screenshots/
 results/
 *.pyc
 .venv/  
+.env

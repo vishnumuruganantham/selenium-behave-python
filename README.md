@@ -47,7 +47,7 @@ browser = chrome
 timeout = 15
 ```
 
-## Running the tests
+## 4. Running the tests
 
 Run everything:
 ```
@@ -74,7 +74,7 @@ python -m behave features/login.feature
 > the Python `Scripts` folder is on your system PATH. `python -m behave`
 > works everywhere.
 
-## Viewing reports (Allure)
+## 5. Viewing reports (Allure)
 
 1. Run tests with the Allure formatter (writes raw results):
 ```
@@ -105,6 +105,87 @@ reports/          Allure results output
 requirements.txt  Python dependencies
 behave.ini        Behave runner configuration
 ```
+
+## Configuration & Test Data
+
+This framework separates configuration and test data into three sources,
+each with a clear purpose:
+
+| Source | Holds | Committed to Git? | Read via |
+|--------|-------|-------------------|----------|
+| `config/config.ini` | Non-secret settings — base URL, browser, timeouts | Yes | `ConfigReader` (configparser) |
+| `.env` | Secrets — passwords, API keys, tokens | No (git-ignored) | `python-dotenv` + `os.getenv` |
+| `test_data/*.json` | Test input data — user profiles, datasets | Yes | `DataReader` (json) |
+
+### 1. `config/config.ini` — environment settings
+
+Non-sensitive settings, organized into sections. Safe to commit.
+
+```
+[app]
+base_url = https://the-internet.herokuapp.com
+browser = chrome
+timeout = 15
+```
+
+Read in code by section and key:
+
+```python
+from utils.config_reader import ConfigReader
+
+config = ConfigReader()
+base_url = config.get("app", "base_url")
+```
+
+### 2. `.env` — secrets (never committed)
+
+Sensitive values that must stay out of the repo. This file is git-ignored;
+a `.env.example` template is committed so others know which keys to set.
+
+```
+TEST_USERNAME=your_username
+TEST_PASSWORD=your_password
+```
+
+Read in code:
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+username = os.getenv("TEST_USERNAME")
+```
+
+> Copy `.env.example` to `.env` and fill in real values before running
+> tests that need credentials.
+
+### 3. `test_data/*.json` — test input data
+
+Test datasets kept outside the code, so cases can be added without
+touching test logic.
+
+```json
+{
+  "valid_user":   { "username": "vishnu", "password": "secret" },
+  "invalid_user": { "username": "vishnu", "password": "wrong"  }
+}
+```
+
+Read in code by key:
+
+```python
+from utils.data_reader import DataReader
+
+user = DataReader.get_user("valid_user")
+```
+
+### Which goes where?
+
+- **Changes per environment, not secret** (URL, browser, timeout) →
+  `config.ini`
+- **Secret** (passwords, API keys) → `.env`
+- **Test inputs** (users, datasets, expected values) → `test_data/*.json`
 
 ## Troubleshooting
 
