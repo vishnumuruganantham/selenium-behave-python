@@ -234,6 +234,26 @@ password = os.getenv("TEST_PASSWORD")
 bank_account = os.getenv("TEST_BANK_ACCOUNT_NUMBER")
 api_key = os.getenv("API_KEY")
 
-print(f"\nReading from .env file kept locally: {bank_account}")  
+print(f"\nReading from .env file kept locally: {bank_account}")
+
+print("\nReading from users.xlsx file from test_data folder")
+
+# Reading from excel (users.xlsx)
+from openpyxl import load_workbook
+
+wb = load_workbook("test_data/users.xlsx")
+sheet = wb["Users"]
+
+for row in sheet.iter_rows(min_row=2, values_only=True):  # skip header row
+    username, password, expected = row
+    print(username, password, expected)
+
+print("\nReading from users.csv file from test_data folder")
+import csv
+
+with open("test_data/users.csv", newline="") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        print(row)  # each row is a LIST: ['vishnu', 'secret', 'Welcome']
 
 time.sleep(5)

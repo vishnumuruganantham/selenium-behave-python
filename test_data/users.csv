@@ -1,0 +1,3 @@
+username,password,expected
+vishnu,secret,Welcome
+baduser,wrong,Invalid credentials
