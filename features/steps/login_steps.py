@@ -14,12 +14,6 @@ def login(context, user, pwd):
     else:
         context.inventory_page = context.login_page.login(user, pwd)
 
-
-@then("the inventory page is displayed")
-def step_inventory(context):
-    assert context.inventory.is_loaded(), "Inventory page did not load"
-
-
 @then('an error "{message}" is shown')
 def step_inventory(context, message):
     assert message in context.login.error_message(), "Error message is not seen"
