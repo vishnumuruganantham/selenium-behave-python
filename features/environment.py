@@ -5,10 +5,17 @@ from utils.config_reader import ConfigReader
 from datetime import datetime
 import os
 import allure
+import logging
 
 
 def before_all(context):
     context.config_data = ConfigReader()
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.FileHandler("results/test_run.log"), logging.StreamHandler()],
+    )
+    logging.info("Test run started")
 
 
 def before_scenario(context, scenario):
@@ -16,6 +23,7 @@ def before_scenario(context, scenario):
     context.driver = DriverFactory.get_driver(browser)
     context.login_page = LoginPage(context.driver)
     context.inventory = InventoryPage(context.driver)
+    logging.info(f"Starting scenario: {scenario.name}")
 
 
 def after_step(context, step):
@@ -42,6 +50,7 @@ def after_step(context, step):
 
 def after_scenario(context, scenario):
     try:  # Wrapped in try/except so a cleanup error never masks the real reason the test failed
+        logging.info(f"Finished scenario: {scenario.name} — {scenario.status}")
         context.driver.quit()
     except Exception:
         pass
