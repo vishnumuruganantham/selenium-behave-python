@@ -3,7 +3,6 @@ selenium==4.47.0
 behave==1.3.3
 allure-behave==2.16.1
 
-
 # Test data handling
 openpyxl==3.1.5        # read/write Excel test data (.xlsx)
 PyYAML==6.0.3          # if config/test data is in YAML instead of .ini
