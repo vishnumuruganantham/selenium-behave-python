@@ -14,12 +14,21 @@ class InventoryPage(BasePage):
         return self.is_visible(self.product_title)
 
     def select_products(self):
-        total_products = len(self.multiple_elements(self.all_add_to_cart_buttons))
-        for _ in range(total_products):
-            # Re-locates fresh each call. Clicking flips a button's data-test
-            # from add-to-cart-* to remove-*, so the same locator always
-            # matches the next remaining "Add to cart" button.
-            self.click(self.all_add_to_cart_buttons)
+        # Capture each button's own unique data-test value upfront, then
+        # click each one via its own unique locator, instead of reusing one
+        # ambiguous "first match" locator across the whole loop. This avoids
+        # any dependence on click/render ordering for a specific button.
+        # (The actual flakiness we hit turned out to be Chrome's password-
+        # leak-warning dialog eating clicks — see driver_factory.py — but
+        # this is still the more correct pattern regardless.)
+        product_ids = [
+            el.get_attribute("data-test")
+            for el in self.multiple_elements(self.all_add_to_cart_buttons)
+        ]
+        for product_id in product_ids:
+            self.click((By.CSS_SELECTOR, f"[data-test='{product_id}']"))
+
+        total_products = len(product_ids)
         cart_count = int(self.text(self.total_item_count))
         logging.info(f"{total_products} add to cart buttons clicked")
         logging.info(f"{cart_count} number of items added to cart")
