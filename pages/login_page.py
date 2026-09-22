@@ -22,8 +22,8 @@ class LoginPage(BasePage):
         return self
 
     def login(self, user, password):
-        self.type(self.user_name, user)
-        self.type(self.pass_word, password)
+        self.enter_text(self.user_name, user)
+        self.enter_text(self.pass_word, password)
         self.click(self.submit_btn)
         return self
 
