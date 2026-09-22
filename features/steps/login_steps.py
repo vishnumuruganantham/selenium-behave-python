@@ -11,7 +11,7 @@ register_type(Text=parse_text)
 
 
 @given("the login page is open")
-def step_open(context):
+def open_login_page(context):
     context.login_page.open_login_page()
 
 
@@ -21,5 +21,5 @@ def login(context, user, pwd):
 
 
 @then('an error "{message}" is shown')
-def step_inventory(context, message):
+def assert_error_message_shown(context, message):
     assert message in context.login_page.error_message(), "Error message is not seen"
