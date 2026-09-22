@@ -39,12 +39,23 @@ pip install -r requirements.txt
 ```
 
 ### 3. Configure the environment
-Edit `config/config.ini` with your target URL, browser, and timeouts:
+Non-secret settings live in `config/config.ini`, split by environment:
 ```
 [app]
-base_url = https://example.com
-browser = chrome
 timeout = 15
+
+[prod]
+base_url = https://www.saucedemo.com/
+
+[qa]
+base_url = https://www.int.saucedemo.com/
+```
+
+`browser` and `env` are set in `behave.ini` under `[behave.userdata]` (defaults:
+`browser = firefox`, `env = prod`), and can be overridden per run without
+editing any file:
+```
+python -m behave -D browser=chrome -D env=qa
 ```
 
 ## 4. Running the tests
@@ -76,18 +87,18 @@ python -m behave features/login.feature
 
 ## 5. Viewing reports (Allure)
 
-1. Run tests with the Allure formatter (writes raw results):
+Every `python -m behave` run already writes Allure results automatically —
+`behave.ini` runs both the `pretty` (console) and `allure` formatters by
+default, and Allure's output goes to `reports/allure-results`. No extra
+flags needed.
+
+Open the report (requires the Allure CLI installed):
 ```
-   python -m behave -f allure -o reports/allure
+allure serve reports/allure-results
 ```
-   > `allure` here is a short alias registered in `behave.ini` under
-   > `[behave.formatters]`. It maps to
-   > `allure_behave.formatter:AllureFormatter`, so you don't have to type
-   > the full path each time.
-2. Open the report (requires the Allure CLI installed):
-```
-   allure serve reports/allure
-```
+
+> `allure` in `behave.ini` is a short alias registered under
+> `[behave.formatters]`, mapping to `allure_behave.formatter:AllureFormatter`.
 
 > The Allure **CLI** is separate from the `allure-behave` pip package.
 > Install it via Scoop (Windows), Homebrew (macOS), or download from
@@ -100,42 +111,51 @@ features/         Gherkin .feature files, step definitions, and hooks
 pages/            Page Object Model classes (locators + actions)
 utils/            Driver factory, config reader, data reader
 test_data/        External test data (JSON/CSV/Excel)
-config/           config.ini (URLs, browser, timeouts)
-reports/          Allure results output
+config/           config.ini (per-env base URLs, timeouts), config.yaml (YAML example)
+reports/          Log file + Allure results output
 requirements.txt  Python dependencies
-behave.ini        Behave runner configuration
+behave.ini        Behave runner configuration (incl. browser/env defaults)
 ```
 
 ## Configuration & Test Data
 
-This framework separates configuration and test data into three sources,
+This framework separates configuration and test data into four sources,
 each with a clear purpose:
 
 | Source | Holds | Committed to Git? | Read via |
 |--------|-------|-------------------|----------|
-| `config/config.ini` | Non-secret settings — base URL, browser, timeouts | Yes | `ConfigReader` (configparser) |
+| `config/config.ini` | Non-secret settings, per environment — base URL, timeout | Yes | `ConfigReader` (configparser) |
+| `behave.ini` `[behave.userdata]` | Which browser and which env to run against | Yes | `context.config.userdata`, or `-D key=value` on the command line |
 | `.env` | Secrets — passwords, API keys, tokens | No (git-ignored) | `python-dotenv` + `os.getenv` |
 | `test_data/*.json` | Test input data — user profiles, datasets | Yes | `DataReader` (json) |
 
 ### 1. `config/config.ini` — environment settings
 
-Non-sensitive settings, organized into sections. Safe to commit.
+Non-sensitive settings, one section per environment. Safe to commit.
 
 ```
 [app]
-base_url = https://the-internet.herokuapp.com
-browser = chrome
 timeout = 15
+
+[prod]
+base_url = https://www.saucedemo.com/
+
+[qa]
+base_url = https://www.int.saucedemo.com/
 ```
 
-Read in code by section and key:
+Read in code:
 
 ```python
 from utils.config_reader import ConfigReader
 
-config = ConfigReader()
-base_url = config.get("app", "base_url")
+base_url = ConfigReader().get_base_url("prod")   # or "qa", etc.
+timeout = ConfigReader().get("app", "timeout")
 ```
+
+`env` itself comes from `behave.ini`'s `[behave.userdata]` (default `prod`),
+resolved in `features/environment.py` and passed into `LoginPage(driver, env)`.
+Override per run with `-D env=qa`, same mechanism as `-D browser=chrome`.
 
 ### 2. `.env` — secrets (never committed)
 
@@ -182,8 +202,9 @@ user = DataReader.get_user("valid_user")
 
 ### Which goes where?
 
-- **Changes per environment, not secret** (URL, browser, timeout) →
-  `config.ini`
+- **Changes per environment, not secret** (base URL, timeout) → `config.ini`
+- **Which browser/env to run against** → `behave.ini` (`-D browser=...`,
+  `-D env=...`)
 - **Secret** (passwords, API keys) → `.env`
 - **Test inputs** (users, datasets, expected values) → `test_data/*.json`
 
@@ -212,3 +233,5 @@ practice basic Selenium actions with the driver.
 7. ActionChains
 8. Frames
 9. Window handles
+10. Reading test data: JSON (`DataReader`), `.env` (`python-dotenv`),
+    Excel (`openpyxl`), CSV (`csv`), and YAML (`PyYAML`)
