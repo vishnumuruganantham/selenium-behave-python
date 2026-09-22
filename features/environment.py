@@ -37,30 +37,43 @@ def before_scenario(context, scenario):
 
 
 def after_step(context, step):
-    if step.status == "failed":
-        # This attaches perfectly to Allure regardless of characters
-        allure.attach(
-            context.driver.get_screenshot_as_png(),
-            name=step.name,
-            attachment_type=allure.attachment_type.PNG,
-        )
+    if step.status != "failed":
+        return
+    driver = getattr(context, "driver", None)
+    if driver is None:
+        return
+    try:
+        png = driver.get_screenshot_as_png()
+    except Exception:
+        logging.exception(f"Could not capture screenshot for failed step: {step.name}")
+        return
+    allure.attach(png, name=step.name, attachment_type=allure.attachment_type.PNG)
 
-        # Local backup path
-        folder = "screenshots"
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Local backup path
+    folder = "screenshots"
+    os.makedirs(folder, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_step_name = "".join(
+        c for c in step.name if c.isalnum() or c in (" ", "_")
+    ).replace(" ", "_")
 
-        # Strip spaces and illegal characters out for the local filename
-        safe_step_name = "".join(
-            c for c in step.name if c.isalnum() or c in (" ", "_")
-        ).replace(" ", "_")
-        context.driver.save_screenshot(f"screenshots/{timestamp}_{safe_step_name}.png")
+    try:
+        with open(f"screenshots/{timestamp}_{safe_step_name}.png", "wb") as f:
+            f.write(png)
+    except OSError:
+        logging.exception("Could not save local screenshot backup")
 
 
 def after_scenario(context, scenario):
-    try:  # Wrapped in try/except so a cleanup error never masks the real reason the test failed
-        logging.info(f"Finished scenario: {scenario.name} — {scenario.status}")
-        context.driver.quit()
+    logging.info(f"Finished scenario: {scenario.name} — {scenario.status}")
+
+    driver = getattr(context, "driver", None)
+    if driver is None:
+        return
+
+    try:
+        driver.quit()
     except Exception:
-        pass
+        logging.exception(
+            f"Failed to quit driver cleanly for scenario: {scenario.name}"
+        )
