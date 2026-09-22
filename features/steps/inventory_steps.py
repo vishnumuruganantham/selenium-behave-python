@@ -8,4 +8,7 @@ def step_inventory(context):
 
 @then("the user should be able to add products to cart")
 def step_open(context):
-    assert context.inventory_page.select_products(), "Unable to select"
+    total, added = context.inventory_page.select_products()
+    assert (
+        total == added
+    ), f"Expected {total} items added to cart, but cart shows {added}"

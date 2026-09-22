@@ -14,13 +14,16 @@ class InventoryPage(BasePage):
         return self.is_visible(self.product_title)
 
     def select_products(self):
-        all_add_to_cart_buttons = self.multiple_elements(self.all_add_to_cart_buttons)
-        for button in all_add_to_cart_buttons:
-            self.click(button)
+        total_products = len(self.multiple_elements(self.all_add_to_cart_buttons))
+        for _ in range(total_products):
+            # Re-locates fresh each call. Clicking flips a button's data-test
+            # from add-to-cart-* to remove-*, so the same locator always
+            # matches the next remaining "Add to cart" button.
+            self.click(self.all_add_to_cart_buttons)
         cart_count = int(self.text(self.total_item_count))
-        logging.info(f"{len(all_add_to_cart_buttons)} add to cart buttons clicked")
+        logging.info(f"{total_products} add to cart buttons clicked")
         logging.info(f"{cart_count} number of items added to cart")
-        return len(all_add_to_cart_buttons) == cart_count
+        return total_products, cart_count
 
     def calculate_sum_of_all_prices(self):
         all_prices = self.multiple_elements(self.all_item_price)
