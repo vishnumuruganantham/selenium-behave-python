@@ -256,4 +256,14 @@ with open("test_data/users.csv", newline="") as f:
     for row in reader:
         print(row)  # each row is a LIST: ['vishnu', 'secret', 'Welcome']
 
+
+print("\nReading from config.yaml file from config folder")
+import yaml
+
+with open("config/config.yaml") as f:
+    data = yaml.safe_load(f)
+
+print(data["prod"]["base_url"])  # https://www.saucedemo.com/
+print(data["app"]["timeout"])  # 15 (already an int, not a string)
+
 time.sleep(5)

@@ -6,7 +6,7 @@ allure-behave==2.16.1
 
 # Test data handling
 openpyxl==3.1.5        # read/write Excel test data (.xlsx)
-PyYAML==6.0.2          # if config/test data is in YAML instead of .ini
+PyYAML==6.0.3          # if config/test data is in YAML instead of .ini
 
 # HTTP / API validation alongside UI tests
 requests==2.32.3
