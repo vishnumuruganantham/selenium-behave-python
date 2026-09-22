@@ -5,8 +5,8 @@ from utils.config_reader import ConfigReader
 
 class LoginPage(BasePage):
 
-    user_name = (By.ID, "user-name")
-    pass_word = (By.XPATH, "//input[@data-test='password']")
+    username = (By.ID, "user-name")
+    password = (By.XPATH, "//input[@data-test='password']")
     submit_btn = (By.CSS_SELECTOR, "#login-button")
     error = (By.CSS_SELECTOR, "[data-test='error']")
 
@@ -15,15 +15,15 @@ class LoginPage(BasePage):
         self.url = ConfigReader().get_base_url(env)
 
     def is_loaded(self):
-        return self.is_visible(self.user_name)
+        return self.is_visible(self.username)
 
     def open_login_page(self):
         self.open(self.url)
         return self
 
     def login(self, user, password):
-        self.enter_text(self.user_name, user)
-        self.enter_text(self.pass_word, password)
+        self.enter_text(self.username, user)
+        self.enter_text(self.password, password)
         self.click(self.submit_btn)
         return self
 
