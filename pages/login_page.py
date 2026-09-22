@@ -9,8 +9,10 @@ class LoginPage(BasePage):
     pass_word = (By.XPATH, "//input[@data-test='password']")
     submit_btn = (By.CSS_SELECTOR, "#login-button")
     error = (By.CSS_SELECTOR, "[data-test='error']")
-    config = ConfigReader()
-    url = config.get("app", "base_url")
+
+    def __init__(self, driver, env="prod", timeout=15):
+        super().__init__(driver, timeout)
+        self.url = ConfigReader().get_base_url(env)
 
     def is_loaded(self):
         return self.is_visible(self.user_name)
