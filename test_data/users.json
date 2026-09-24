@@ -13,5 +13,10 @@
         "username": "locked_account",
         "password": "secret",
         "expected_error": "Account is locked"
+    },
+    "checkout_info": {
+        "first_name": "Vishnu",
+        "last_name": "Muruganantham",
+        "postal_code": "600001"
     }
 }
