@@ -9,7 +9,7 @@ import time
 
 class CheckoutPage(BasePage):
 
-    title = (By.CSS_SELECTOR, ".title")
+    title = (By.CSS_SELECTOR, "[data-test='title']")
     first_name = (By.CSS_SELECTOR, "#first-name")
     last_name = (By.CSS_SELECTOR, "#last-name")
     zip_code = (By.CSS_SELECTOR, "#postal-code")
@@ -44,7 +44,9 @@ class CheckoutPage(BasePage):
         return self.text(self.success_msg)
 
     def download_receipt(self):
-        existing_files = set(os.listdir(DOWNLOAD_DIR)) if DOWNLOAD_DIR.exists() else set()
+        existing_files = (
+            set(os.listdir(DOWNLOAD_DIR)) if DOWNLOAD_DIR.exists() else set()
+        )
         self.click(self.btn_download_receipt)
 
         deadline = time.time() + 10
