@@ -1,5 +1,10 @@
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+# Shared with CheckoutPage, which needs to know where to look for the
+# downloaded receipt. Anchored to the repo root, not cwd-relative.
+DOWNLOAD_DIR = Path(__file__).resolve().parent.parent / "downloads"
 
 
 class DriverFactory:
@@ -7,6 +12,7 @@ class DriverFactory:
     @staticmethod
     def get_driver(browser="chrome"):
         if browser == "chrome":
+            DOWNLOAD_DIR.mkdir(exist_ok=True)
             options = Options()
             options.add_argument("--start-maximized")
             options.add_argument("--disable-gpu")
@@ -21,6 +27,9 @@ class DriverFactory:
                     "credentials_enable_service": False,
                     "profile.password_manager_enabled": False,
                     "profile.password_manager_leak_detection": False,
+                    "download.default_directory": str(DOWNLOAD_DIR),
+                    "download.prompt_for_download": False,
+                    "download.directory_upgrade": True,
                 },
             )
             return webdriver.Chrome(options=options)
