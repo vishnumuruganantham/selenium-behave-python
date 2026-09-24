@@ -9,6 +9,7 @@ class InventoryPage(BasePage):
     all_add_to_cart_buttons = (By.CSS_SELECTOR, "[data-test^='add-to-cart-']")
     all_item_price = (By.CSS_SELECTOR, "[data-test='inventory-item-price']")
     total_item_count = (By.CSS_SELECTOR, "[data-test='shopping-cart-badge']")
+    cart_button = (By.CSS_SELECTOR, "#shopping_cart_container")
 
     def is_loaded(self):
         return self.is_visible(self.product_title)
@@ -41,3 +42,6 @@ class InventoryPage(BasePage):
             cost = float(price.text.replace("$", ""))
             total += cost
         return total
+
+    def navigate_to_cart_page(self):
+        self.click(self.cart_button)
