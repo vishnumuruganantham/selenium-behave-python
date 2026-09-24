@@ -1,6 +1,8 @@
 from utils.driver_factory import DriverFactory
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
+from pages.cart_page import CartPage
+from pages.checkout_page import CheckoutPage
 from utils.config_reader import ConfigReader
 from datetime import datetime
 import os
@@ -33,6 +35,8 @@ def before_scenario(context, scenario):
     context.driver = DriverFactory.get_driver(browser)
     context.login_page = LoginPage(context.driver, env)
     context.inventory_page = InventoryPage(context.driver)
+    context.cart_page = CartPage(context.driver)
+    context.checkout_page = CheckoutPage(context.driver)
     logging.info(f"Starting scenario: {scenario.name}")
 
 
