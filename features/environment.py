@@ -32,7 +32,8 @@ def before_all(context):
 def before_scenario(context, scenario):
     browser = context.config.userdata.get("browser", "chrome")
     env = context.config.userdata.get("env", "prod")
-    context.driver = DriverFactory.get_driver(browser)
+    headless = context.config.userdata.getbool("headless", False)
+    context.driver = DriverFactory.get_driver(browser, headless)
     context.login_page = LoginPage(context.driver, env)
     context.inventory_page = InventoryPage(context.driver)
     context.cart_page = CartPage(context.driver)

@@ -10,11 +10,19 @@ DOWNLOAD_DIR = Path(__file__).resolve().parent.parent / "downloads"
 class DriverFactory:
 
     @staticmethod
-    def get_driver(browser="chrome"):
+    def get_driver(browser="chrome", headless=False):
         if browser == "chrome":
             DOWNLOAD_DIR.mkdir(exist_ok=True)
             options = Options()
-            options.add_argument("--start-maximized")
+            if headless:
+                # CI runners have no display. --start-maximized has no effect
+                # headless, so pin an explicit window size instead - some
+                # sites lay out elements differently (or not at all) below a
+                # certain viewport width.
+                options.add_argument("--headless=new")
+                options.add_argument("--window-size=1920,1080")
+            else:
+                options.add_argument("--start-maximized")
             options.add_argument("--disable-gpu")
             # Test creds like "secret_sauce" match Chrome's public breach
             # list, so it pops a native "Change your password" dialog mid-
@@ -34,7 +42,14 @@ class DriverFactory:
             )
             return webdriver.Chrome(options=options)
         elif browser == "firefox":
-            return webdriver.Firefox()
+            from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
+            firefox_options = FirefoxOptions()
+            if headless:
+                firefox_options.add_argument("--headless")
+                firefox_options.add_argument("--width=1920")
+                firefox_options.add_argument("--height=1080")
+            return webdriver.Firefox(options=firefox_options)
         elif browser == "edge":
             return webdriver.Edge()
         raise ValueError(f"Unsupported browser: {browser}")
