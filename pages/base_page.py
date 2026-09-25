@@ -1,13 +1,21 @@
 from abc import ABC, abstractmethod
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 
 
 class BasePage(ABC):
     def __init__(self, driver, timeout=15):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
+        # By default WebDriverWait only ignores NoSuchElementException while
+        # polling, so a StaleElementReferenceException (the element existed
+        # a moment ago but got swapped out - e.g. mid page-transition) is
+        # raised immediately instead of being retried. Also ignore it here
+        # so every wait below tolerates the DOM changing under it, instead
+        # of failing on a transient race.
+        self.wait = WebDriverWait(
+            driver, timeout, ignored_exceptions=[StaleElementReferenceException]
+        )
 
     def open(self, url):
         self.driver.get(url)
