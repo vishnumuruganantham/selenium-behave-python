@@ -1,4 +1,5 @@
 from behave import then
+import logging
 
 
 @then("the user enters information on checkout and clicks continue")
@@ -27,3 +28,11 @@ def assert_order_placed_and_download_receipt(context):
     )
     downloaded_file = context.checkout_page.download_receipt()
     assert downloaded_file is not None, "Receipt PDF was not downloaded within 10s"
+
+    # Already verified the download worked; no need to keep the file
+    # around, so clean it up rather than letting downloads/ accumulate
+    # one PDF per run.
+    try:
+        downloaded_file.unlink()
+    except OSError:
+        logging.exception(f"Could not delete downloaded receipt: {downloaded_file}")
