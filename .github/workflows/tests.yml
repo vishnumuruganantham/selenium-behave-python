@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  behave-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run behave tests (headless Chrome)
+        run: python -m behave -D browser=chrome -D headless=true
+
+      # Runs even if the tests above failed, so results/logs from a
+      # failing run are still available to look at.
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: reports/allure-results
+          if-no-files-found: warn
+
+      - name: Upload run log and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-log-and-screenshots
+          path: |
+            reports/test_run.log
+            screenshots/
+          if-no-files-found: ignore
